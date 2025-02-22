@@ -1,7 +1,12 @@
 import { useBasic, useQuery } from "@basictech/react";
 import "./App.css";
+import { BrowserAI } from "@browserai/browserai";
+
+const browserAI = new BrowserAI();
 
 const deleteCursorIcon = `url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2MEE1RkEiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSIzIDYgNSA2IDIxIDYiPjwvcG9seWxpbmU+PHBhdGggZD0iTTE5IDZ2MTRhMiAyIDAgMCAxLTIgMkg3YTIgMiAwIDAgMS0yLTJWNm0zIDBWNGEyIDIgMCAwIDEgMi0yaDRhMiAyIDAgMCAxIDIgMnYyIj48L3BhdGg+PC9zdmc+),auto`;
+
+browserAI.loadModel("llama-3.2-1b-instruct");
 
 function App() {
   const { db } = useBasic();
@@ -53,6 +58,7 @@ function App() {
             </div>
           ))}
         </div>
+        <div></div>
         <div>
           {isSignedIn ? (
             <div>
