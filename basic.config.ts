@@ -3,16 +3,17 @@
 // docs: https://docs.basic.tech/info/schema 
 
 export const schema = {
-  project_id: '',
+  project_id: '5e100a79-94b2-4117-972a-42971b63c226',
   version: 0,
   tables: {
-    emojis: {
+    table_name: {
       type: 'collection',
       fields: {
-        value: {
+        field_name: {
           type: 'string',
-        },
-      },
-    },
-  },
+          indexed: true,
+        }
+      }
+    }
+  }
 }
