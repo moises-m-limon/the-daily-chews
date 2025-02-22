@@ -41,16 +41,6 @@ function App() {
         >
           new ✨
         </button>
-        <div>
-          {!isSignedIn ? (
-            <button onClick={signin}>Sign In</button>
-          ) : (
-            // once signed in, show their email
-            <div>
-              <p>Signed in as: {user?.email}</p>
-            </div>
-          )}
-        </div>
         <div className="flex flex-row gap-4 justify-center min-h-[60px] ">
           {emojis?.map((e: { id: string; value: string }) => (
             <div
