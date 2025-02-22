@@ -212,39 +212,8 @@ function App() {
   return (
     <>
       <h1 className="text-4xl font-bold font-mono">create-lofi-app</h1>
-
-      {/* Emoji & Auth Section */}
       <div className="card">
-        <button
-          onClick={() =>
-            db.collection("emojis").add({
-              value: `${
-                [
-                  "✨",
-                  "🌟",
-                  "💫",
-                  "⭐",
-                  "🌠",
-                  "🎇",
-                  "🎆",
-                  "🌈",
-                  "🌸",
-                  "🌺",
-                  "🍀",
-                  "🎨",
-                  "🎭",
-                  "🎪",
-                  "🎡",
-                  "🎢",
-                  "🎠",
-                ][Math.floor(Math.random() * 17)]
-              }`,
-            })
-          }
-        >
-          new ✨
-        </button>
-
+        <a href="/instagram">Instagram</a>
         <div className="flex flex-row gap-4 justify-center min-h-[60px] ">
           {emojis?.map((e: { id: string; value: string }) => (
             <div
@@ -269,7 +238,6 @@ function App() {
           )}
         </div>
       </div>
-
       {/* AI Text Generation Section */}
       {loading ? (
         <div className="text-center mt-10">
@@ -297,7 +265,6 @@ function App() {
           <p className="mt-4 p-2 bg-gray-100 rounded-md">{aiResponse}</p>
         </div>
       )}
-
       {/* Process AI Output Section */}
       <div className="card mt-10 p-4 border border-gray-300 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold">Process AI Output</h2>
@@ -331,7 +298,6 @@ function App() {
           </div>
         )}
       </div>
-
       {/* Footer Links */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32 max-w-5xl mx-auto px-4">
         <a
