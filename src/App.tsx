@@ -63,6 +63,17 @@ function App() {
             </div>
           ))}
         </div>
+        <div>
+          {isSignedIn ? (
+            <div>
+              <p>Signed in as: {user.email}</p>
+              {/* Add a button to sign out */}
+              <button onClick={signout}>Sign Out</button>
+            </div>
+          ) : (
+            <button onClick={signin}>Sign In</button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32 max-w-5xl mx-auto px-4">
