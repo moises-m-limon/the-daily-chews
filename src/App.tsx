@@ -1,120 +1,3 @@
-// import { useBasic, useQuery } from "@basictech/react";
-// import { useState, useEffect } from "react";
-// import "./App.css";
-// import { BrowserAI } from "@browserai/browserai";
-
-// const ai = new BrowserAI();
-
-// const deleteCursorIcon = `url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2MEE1RkEiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSIzIDYgNSA2IDIxIDYiPjwvcG9seWxpbmU+PHBhdGggZD0iTTE5IDZ2MTRhMiAyIDAgMCAxLTIgMkg3YTIgMiAwIDAgMS0yLTJWNm0zIDBWNGEyIDIgMCAwIDEgMi0yaDRhMiAyIDAgMCAxIDIgMnYyIj48L3BhdGg+PC9zdmc+),auto`;
-
-// function App() {
-//   const { db } = useBasic();
-//   const emojis = useQuery(() => db.collection("emojis").getAll());
-//   const { signin, isSignedIn, user, signout } = useBasic();
-
-//   // State for AI input and response
-//   const [userInput, setUserInput] = useState("");
-//   const [aiResponse, setAiResponse] = useState("");
-//   const [loading, setLoading] = useState(true);
-
-//   // Load AI Model
-//   useEffect(() => {
-//     const loadAIModel = async () => {
-//       try {
-//         await ai.loadModel("llama-3.2-1b-instruct", {
-//           quantization: "q4f16_1",
-//         });
-//         setLoading(false); // Model is loaded
-//       } catch (error) {
-//         console.error("Error loading AI model:", error);
-//         setAiResponse("Failed to load AI model.");
-//         setLoading(false);
-//       }
-//     };
-//     loadAIModel();
-//   }, []);
-
-//   // Function to handle AI generation
-//   const handleGenerateText = async () => {
-//     if (!userInput.trim()) return;
-//     setAiResponse("Generating response...");
-
-//     try {
-//       const response = await ai.generateText([
-//         { role: "system", content: "You are a helpful assistant." },
-//         { role: "user", content: userInput },
-//       ]);
-//       console.log(response);
-//       setAiResponse(response || "No response received.");
-//     } catch (error) {
-//       setAiResponse("Error generating response.");
-//       console.error(error);
-//     }
-//   };
-
-//   return (
-//     <>
-//       <h1 className="text-4xl font-bold font-mono">create-lofi-app</h1>
-
-//       {loading ? (
-//         <div className="text-center mt-10">
-//           <p className="text-lg font-semibold">Loading AI model...</p>
-//           <p className="text-gray-500">This may take a few seconds.</p>
-//         </div>
-//       ) : (
-//         <div className="card mt-10 p-4 border border-gray-300 rounded-lg shadow-md">
-//           <h2 className="text-2xl font-bold">AI Assistant</h2>
-//           <input
-//             type="text"
-//             className="border p-2 rounded-md w-full mt-2"
-//             placeholder="Ask the AI something..."
-//             value={userInput}
-//             onChange={(e) => setUserInput(e.target.value)}
-//             disabled={loading} // Disable input while loading
-//           />
-//           <button
-//             className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md"
-//             onClick={handleGenerateText}
-//             disabled={loading} // Disable button while loading
-//           >
-//             {loading ? "Loading..." : "Generate Response"}
-//           </button>
-//           <p className="mt-4 p-2 bg-gray-100 rounded-md">{aiResponse}</p>
-//         </div>
-//       )}
-
-//       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32 max-w-5xl mx-auto px-4">
-//         <a
-//           href="https://docs.basic.tech"
-//           target="_blank"
-//           className="card-link group"
-//         >
-//           <h2 className="card-title">Basic Docs</h2>
-//           <p className="card-description">Auth, sync, and database</p>
-//         </a>
-
-//         <a
-//           href="https://vite-pwa-org.netlify.app/"
-//           target="_blank"
-//           className="card-link group"
-//         >
-//           <h2 className="card-title">PWA Reference</h2>
-//           <p className="card-description">Enable offline capabilities</p>
-//         </a>
-
-//         <a
-//           href="https://tailwindcss.com/docs"
-//           target="_blank"
-//           className="card-link group"
-//         >
-//           <h2 className="card-title">Tailwind</h2>
-//           <p className="card-description">Styling framework</p>
-//         </a>
-//       </div>
-//     </>
-//   );
-// }
-
 // export default App;
 import { useBasic, useQuery } from "@basictech/react";
 import { useState, useEffect } from "react";
@@ -175,22 +58,22 @@ function App() {
       console.error(error);
     }
   };
-
-  // Function to pass the AI assistant output to the backend
   const handleProcessAiOutput = async () => {
     if (!aiResponse.trim()) {
       alert("No AI output to process!");
       return;
     }
     setProcessingAiOutput(true);
+
     try {
-      console.log(aiResponse);
       const response = await fetch("http://127.0.0.1:5000/process_article", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // Use the AI assistant output as the "article_text" for the backend
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ article_text: aiResponse }),
       });
+
       if (!response.ok) throw new Error("Failed to process AI output");
 
       const data = await response.json();
@@ -211,9 +94,16 @@ function App() {
 
   return (
     <>
-      <h1 className="text-4xl font-bold font-mono">create-lofi-app</h1>
+      <h1 className="text-4xl font-bold font-mono">The Daily Chews</h1>
       <div className="card">
-        <a href="/instagram">Instagram</a>
+        <a href="/instagram">Feed</a>
+        <div className="flex justify-center items-center mt-4">
+          <img
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/anchor-nmZBCtF1CNwDvIF7So3rKLQfib2dC0.webp"
+            alt="The Daily Chews Logo"
+            className="rounded-lg object-contain max-w-[150px] max-h-[150px]"
+          />
+        </div>
         <div className="flex flex-row gap-4 justify-center min-h-[60px] ">
           {emojis?.map((e: { id: string; value: string }) => (
             <div
@@ -246,7 +136,7 @@ function App() {
         </div>
       ) : (
         <div className="card mt-10 p-4 border border-gray-300 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold">AI Assistant</h2>
+          <h2 className="text-2xl font-bold">What content do you want?</h2>
           <input
             type="text"
             className="border p-2 rounded-md w-full mt-2"
@@ -299,7 +189,7 @@ function App() {
         )}
       </div>
       {/* Footer Links */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32 max-w-5xl mx-auto px-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32 max-w-5xl mx-auto px-4">
         <a
           href="https://docs.basic.tech"
           target="_blank"
@@ -326,7 +216,7 @@ function App() {
           <h2 className="card-title">Tailwind</h2>
           <p className="card-description">Styling framework</p>
         </a>
-      </div>
+      </div> */}
     </>
   );
 }

@@ -18,8 +18,6 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
-
-# Initialize the ElevenLabs client.
 elevenlabs_client = ElevenLabs(
     api_key=os.getenv("ELEVENLABS_API_KEY", "YOUR_ELEVENLABS_API_KEY")
 )
@@ -40,7 +38,8 @@ def generate_summary(article_text):
     """
     genai.configure(api_key=key_g)
     model = genai.GenerativeModel(
-        "gemini-1.5-flash", system_instruction="""give me a summary of the text that can be spoken in 20-30 seconds. Do not include any numbers or special characters""")
+        "gemini-1.5-flash", system_instruction="""give me a summary of the text that can be spoken in 20-30 seconds. Do not include any numbers or special characters, remove any real names and use generic names
+        """)
 
     response = model.generate_content(article_text,
                                       generation_config=genai.types.GenerationConfig(
@@ -49,7 +48,6 @@ def generate_summary(article_text):
     try:
         json_response = json.loads(
             response._result.candidates[0].content.parts[0].text)
-        # Save the summary text to a file later in process_article.
     except Exception as e:
         json_response = {'summary': 'error'}
         print(e)
@@ -70,90 +68,64 @@ def generate_audio(summary, results):
         )
         audio_bytes = b"".join(response)
         results["audio"] = audio_bytes
+
     except Exception as e:
         results["audio_error"] = str(e)
         print('')
 
+
+# def generate_image(summary, results):
+#     """
+#     Generate an image from the summary using Vertex AI.
+#     The resulting image bytes are stored in the shared results dict.
+#     """
+#     print(summary)
+#     try:
+#         images = image_model.generate_images(
+#             prompt=summary,
+#             number_of_images=2,
+#             language="en",
+#             aspect_ratio="1:1",
+#             safety_filter_level="block_some",
+#             person_generation="allow_adult",
+#         )
+#         print(images)
+#         image_bytes = images[0]._image_bytes
+#         results["image"] = image_bytes
+#     except Exception as e:
+#         print('failed image')
+#         print(e)
+#         results["image_error"] = str(e)
 
 def generate_image(summary, results):
     """
     Generate an image from the summary using Vertex AI.
     The resulting image bytes are stored in the shared results dict.
     """
-    print(summary)
+    print('img', summary)
     try:
-        images = image_model.generate_images(
+        # Generate images from Vertex AI
+        response = image_model.generate_images(
             prompt=summary,
-            number_of_images=2,
+            number_of_images=1,  # Generate 2 images
             language="en",
             aspect_ratio="1:1",
             safety_filter_level="block_some",
             person_generation="allow_adult",
         )
-        print(images)
-        image_bytes = images[0]._image_bytes
+
+        print(response)  # Debugging: Print the response object
+
+        generated_image = response.images[0]  # First image
+        image_bytes = generated_image._image_bytes  # Correct attribute
+
+        # Store image bytes in results
         results["image"] = image_bytes
+
     except Exception as e:
-        print('failed image')
-        print(e)
+        print("❌ Image generation failed:", e)
         results["image_error"] = str(e)
 
-
-def generate_video(summary, results):
-    """Generate a video using NVIDIA Cosmos API and store it in results."""
-    invoke_url = "https://ai.api.nvidia.com/v1/cosmos/nvidia/cosmos-1.0-7b-diffusion-text2world"
-    fetch_url_format = "https://api.nvcf.nvidia.com/v2/nvcf/pexec/status/"
-    headers = {
-        "Authorization": f"Bearer {key_n}",
-        "Accept": "application/json",
-    }
-    try:
-        payload = {
-            "inputs": [
-                {
-                    "name": "command",
-                    "shape": [1],
-                    "datatype": "BYTES",
-                    "data": [f'text2world --prompt="{summary}"']
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "status",
-                    "datatype": "BYTES",
-                    "shape": [1]
-                }
-            ]
-        }
-        session = requests.Session()
-        response = session.post(invoke_url, headers=headers, json=payload)
-        if response.status_code == 202:
-            request_id = response.headers.get("NVCF-REQID")
-            fetch_url = fetch_url_format + request_id
-            while response.status_code == 202:
-                time.sleep(5)
-                response = session.get(fetch_url, headers=headers)
-        response.raise_for_status()
-        video_path = "generated_video.zip"
-        with open(video_path, 'wb') as f:
-            f.write(response.content)
-        results["video"] = video_path
-    except Exception as e:
-        print('failed video')
-        results["video_error"] = str(e)
-
-
-# def align_text_mfa(input_path, output_dir="output"):
-#     """
-#     Aligns the transcript with the audio using Montreal Forced Aligner (MFA).
-#     """
-#     print("\n\n\ path\n\n", input_path)
-#     command = [
-#         "mfa", "align", "--clean", "--verbose", input_path,
-#         "english_us_arpa", "english_us_arpa", output_dir
-#     ]
-#     subprocess.run(command, check=True)
-#     print(f"Alignment results saved in {output_dir}")
 
 def align_text_mfa(input_path, output_dir="output"):
     """
@@ -202,6 +174,8 @@ def process_article():
     image_thread.start()
     audio_thread.join()
     image_thread.join()
+
+    print(results.keys())
 
     if "audio_error" in results or "image_error" in results:
         return jsonify({
